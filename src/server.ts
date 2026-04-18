@@ -11,7 +11,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/home', homeRoute); // ← thêm
+app.use('/api/home', homeRoute);
+
+app.get('/piepapi/services', (req, res) => {
+  res.json({ status: 'ok' })
+})
+
 
 mongoose.connect(process.env.MONGO_URI!)
   .then(() => {
