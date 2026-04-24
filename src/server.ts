@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 import detailRoute from './routes/detail_routes';
+import emailRoute from './routes/email_routes';
 import homeRoute from './routes/home_routes';
 
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/api/home', homeRoute);
 app.use('/api/detail', detailRoute);
+app.use('/api/email', emailRoute);
 
 app.get('/piepapi/services', (req, res) => {
   res.json({ status: 'ok' })
