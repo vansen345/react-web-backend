@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { UserModel } from '../models/user_model';
 import { sendMail } from '../services/email_services';
 import { genOtp, verifyOtp } from '../utils/otp_services';
 
@@ -67,13 +68,21 @@ router.post('/verifyOtp', async (req, res) => {
         message: 'Invalid Otp'
       })
     }
+
+    const user = await UserModel.findOne({ email });
+
+    (req.session as any).user = {
+        email: user?.email,
+        avatar: user?.avatar,
+    };
+
     return res.status(200).json({
       status: "true",
       message: 'OTP verified',
       elements: 1,
     })
   } catch (error) {
-
+    res.status(500).json({ status: "error", message: "Verify OTP failed" });
   }
 })
 

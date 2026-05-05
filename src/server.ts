@@ -1,7 +1,10 @@
+import { RedisStore } from 'connect-redis';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import session from 'express-session';
 import mongoose from 'mongoose';
+import { createClient } from 'redis';
 import authenRoute from './routes/authen_routes';
 import detailRoute from './routes/detail_routes';
 import emailRoute from './routes/email_routes';
@@ -12,6 +15,24 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const redisClient = createClient({
+    url: process.env.REDIS_URL!,
+});
+redisClient.connect().catch(console.error);
+
+app.use(session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000
+    }
+}));
 
 // Routes
 app.use('/api/home', homeRoute);
