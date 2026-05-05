@@ -21,6 +21,7 @@ const redisClient = createClient({
 });
 redisClient.connect().catch(console.error);
 
+app.set('trust proxy', 1); // ← thêm dòng này trước session
 app.use(session({
     store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET!,
@@ -28,7 +29,7 @@ app.use(session({
     saveUninitialized: false,
     rolling: true,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production', // ← true khi production
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000
     }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/user_model";
 import { sendMail } from "../services/email_services";
+import '../type/session';
 import { genOtp } from "../utils/otp_services";
 
 
@@ -59,6 +60,8 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const getInfoLogin = async (req: Request, res: Response) => {
+    console.log('session:', req.session);
+        console.log('user:', req.session.user);
    try {
         const user = (req.session as any).user;
         if (!user) {
