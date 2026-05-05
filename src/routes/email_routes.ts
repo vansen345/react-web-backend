@@ -11,12 +11,12 @@ router.post('/send', async (req, res) => {
     const result = await sendMail(to, subject, html);
 
     res.json({
-      success: true,
+      status: "true",
       data: result,
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
+      status: "false",
       message: 'Send email failed',
     });
   }
@@ -27,7 +27,7 @@ router.post('/sendOtp', async (req, res) => {
     const { email } = req.body;
     if (!email) {
       return res.status(400).json({
-        success: false,
+        status: "false",
         message: 'Email is required'
       })
 
@@ -41,11 +41,11 @@ router.post('/sendOtp', async (req, res) => {
 
     await sendMail(email, 'Mã OTP đăng nhập', `<p>Mã OTP của bạn là: <strong>${otp}</strong></p><p>Mã có hiệu lực trong 5 phút.</p>`)
     res.status(200).json({
-      success: true,
+      status: "true",
       message: 'OTP sent success'
     })
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Send OTP failed', elements: error });
+    res.status(500).json({ status: "false", message: 'Send OTP failed', elements: error });
   }
 })
 
@@ -54,20 +54,23 @@ router.post('/verifyOtp', async (req, res) => {
     const { email, otp } = req.body;
     if (!email || !otp) {
       return res.status(400).json({
-        success: false,
+        elements: -2,
+        status: "false",
         message: 'Email and Otp is required'
       })
     }
     const verify = verifyOtp(email, otp)
     if (!verify) {
       return res.status(400).json({
-        success: false,
+        elements: -1,
+        status: "false",
         message: 'Invalid Otp'
       })
     }
     return res.status(200).json({
-      success: true,
-      message: 'OTP verified'
+      status: "true",
+      message: 'OTP verified',
+      elements: 1,
     })
   } catch (error) {
 
