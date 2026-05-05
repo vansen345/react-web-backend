@@ -9,6 +9,7 @@ import authenRoute from './routes/authen_routes';
 import detailRoute from './routes/detail_routes';
 import emailRoute from './routes/email_routes';
 import homeRoute from './routes/home_routes';
+import './type/session';
 
 dotenv.config();
 
