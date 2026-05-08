@@ -60,12 +60,11 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const getInfoLogin = async (req: Request, res: Response) => {
-    console.log('session:', req.session);
-        console.log('user:', req.session.user);
-   try {
-        const user = (req.session as any).user;
+    try {
+        const { email } = req.body; // ← đổi từ session sang body
+        const user = await UserModel.findOne({ email });
         if (!user) {
-            return res.status(401).json({ status: "error", message: "Unauthorized" });
+            return res.status(404).json({ status: "error", message: "User not found" });
         }
         res.status(200).json({
             status: "true",

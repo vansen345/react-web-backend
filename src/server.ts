@@ -42,7 +42,7 @@ app.use('/api/detail', detailRoute);
 app.use('/api/email', emailRoute);
 app.use('/api/register', authenRoute);
 app.use('/api/login', authenRoute);
-
+   
 app.get('/piepapi/services', (req, res) => {
   res.json({ status: 'ok' })
 })
