@@ -19,7 +19,14 @@ app.use(express.json());
 
 const redisClient = createClient({
     url: process.env.REDIS_URL!,
+    socket: {
+        reconnectStrategy: (retries) => Math.min(retries * 50, 500),
+        tls: true,
+    }
 });
+
+redisClient.on('error', (err) => console.log('Redis error:', err));
+redisClient.on('reconnecting', () => console.log('Redis reconnecting...'));
 redisClient.connect().catch(console.error);
 
 app.set('trust proxy', 1); // ← thêm dòng này trước session
