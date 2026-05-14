@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface IUser extends Document {
     email: string;
@@ -9,12 +9,19 @@ export interface IUser extends Document {
 
 const userSchema = new mongoose.Schema<IUser>(
     {
-        email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-        avatar: { type: String, default: "https://res.cloudinary.com/dcu47l2uc/image/upload/v1776849220/copy_of_673761387_1670632933954108_3830695161187199172_n_srcopc_86fa1c.jpg" },
+        email: { 
+            type: String, 
+            required: true, 
+            unique: true, 
+            lowercase: true, 
+            trim: true 
+        },
+        avatar: { 
+            type: String, 
+            default: "" 
+        },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 export const UserModel = mongoose.model<IUser>("User", userSchema);

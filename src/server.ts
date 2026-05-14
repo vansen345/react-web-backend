@@ -7,7 +7,9 @@ import { createServer } from 'http';
 import mongoose from 'mongoose';
 import { createClient } from 'redis';
 import { Server } from 'socket.io';
+import { IMessage, MessageModel } from './models/message_model';
 import authenRoute from './routes/authen_routes';
+import messageRoute from './routes/chat_routes';
 import detailRoute from './routes/detail_routes';
 import emailRoute from './routes/email_routes';
 import homeRoute from './routes/home_routes';
@@ -37,10 +39,24 @@ io.on('connection', (socket) => {
   });
 
   // Gửi tin nhắn
-  socket.on('sendMessage', (data: { roomId: string, message: string, sender: string }) => {
-    console.log('📩 Message:', data);
-    // Gửi cho tất cả trong room
-    io.to(data.roomId).emit('receiveMessage', data);
+  socket.on('sendMessage', async (data: IMessage, callback) => {
+    try {
+      console.log('📩 Message:', data);
+
+      await MessageModel.create(data);
+      // Gửi cho tất cả trong room
+      io.to(data.roomId).emit('receiveMessage', data);
+
+      // báo client thành công
+      callback({
+        success: true,
+        message: 'Message sent',
+      });
+    } catch (error) {
+      callback({
+        success: false,
+      });
+    }
   });
 
 
@@ -81,6 +97,7 @@ app.use('/api/detail', detailRoute);
 app.use('/api/email', emailRoute);
 app.use('/api/register', authenRoute);
 app.use('/api/login', authenRoute);
+app.use('/api/message', messageRoute);
 
 app.get('/piepapi/services', (req, res) => {
   res.json({ status: 'ok' })

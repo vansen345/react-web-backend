@@ -15,22 +15,29 @@ export const registerUser = async (req: Request, res: Response) => {
         if (!emailRegex.test(email)) {
             return res.status(400).json({ status: "error", message: 'Invalid email format' });
         }
-        const user = await UserModel.findOne({ email })
+        const user = await UserModel.findOne({ email });
         if (user) {
-            return res.status(400).json({
-                status: "error",
-                message: 'Email already exists'
-            })
+            return res.status(400).json({ status: "error", message: 'Email already exists' });
         }
-        await UserModel.create({ email })
-        // const otp = genOtp(email)
-        // await sendMail(email, 'Mã OTP đăng ký', `<p>Mã OTP của bạn là: <strong>${otp}</strong></p><p>Mã có hiệu lực trong 5 phút.</p>`)
-        res.status(200).json({ status: "true", message: 'Đăng ký thành công', elements: email });
-    } catch (error) {
-        res.status(500).json({ status: "error", message: 'Đăng ký không thành công', elements: error });
 
+        // Tự gen avatar từ email
+        const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
+        
+        const newUser = await UserModel.create({ email, avatar });
+        
+        res.status(200).json({ 
+            status: "true", 
+            message: 'Đăng ký thành công', 
+            elements: {
+                id: newUser._id,
+                email: newUser.email,
+                avatar: newUser.avatar,
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: 'Đăng ký không thành công' });
     }
-}
+} 
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
