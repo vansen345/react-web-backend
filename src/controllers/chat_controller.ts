@@ -19,7 +19,13 @@ export const saveMessage = async (req: Request, res: Response) => {
             receiverEmail,
             receiverAvatar,
         });
-        req.app.get('io').to(roomId).emit('receiveMessage', newMessage);
+        const io = req.app.get('io');
+
+        // realtime cho receiver
+        io.to(receiverId).emit('receiveMessage', newMessage);
+
+        // realtime cho sender
+        io.to(senderId).emit('receiveMessage', newMessage);
 
         res.status(200).json({ status: "true", message: "Message saved", elements: 1 });
     } catch (error) {
