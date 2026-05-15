@@ -56,8 +56,16 @@ export const loginUser = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(400).json({ status: "error", message: "Email not found" });
         }
+
+        console.log('email:', email);
+        console.log('normalizedEmail:', normalizedEmail);
+        console.log('user:', user);
+
         const otp = genOtp(normalizedEmail);
-        await sendMail(email, "Mã OTP đăng nhập", `<p>Mã OTP của bạn là: <strong>${otp}</strong></p><p>Mã có hiệu lực trong 5 phút.</p>`);
+        console.log('otp:', otp);
+        const mailResult = await sendMail(normalizedEmail, "Mã OTP đăng nhập", `<p>Mã OTP của bạn là: <strong>${otp}</strong></p><p>Mã có hiệu lực trong 5 phút.</p>`);
+        console.log('mailResult:', mailResult);
+
         res.status(200).json({
             status: "true", message: "OTP sent successfully", elements: {
                 email: user.email,
