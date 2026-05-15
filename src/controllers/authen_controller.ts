@@ -77,6 +77,7 @@ export const getInfoLogin = async (req: Request, res: Response) => {
             status: "true",
             message: "Get profile success",
             elements: {
+                id: user._id.toString(),
                 email: user.email,
                 avatar: user.avatar,
             }

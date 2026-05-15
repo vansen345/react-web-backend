@@ -4,6 +4,8 @@ import { MessageModel } from "../models/message_model";
 
 export const saveMessage = async (req: Request, res: Response) => {
     try {
+
+        console.log('body:', req.body);
         const { roomId, message, senderId, senderEmail, senderAvatar, receiverId, receiverEmail, receiverAvatar } = req.body;
 
         const newMessage = await MessageModel.create({
@@ -19,6 +21,7 @@ export const saveMessage = async (req: Request, res: Response) => {
 
         res.status(200).json({ status: "true", message: "Message saved", elements: 1 });
     } catch (error) {
+        console.log('error detail:', error);
         res.status(500).json({ status: "error", message: "Save message failed" });
     }
 };
