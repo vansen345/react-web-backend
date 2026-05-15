@@ -25,7 +25,11 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"]
   }
 });
+
 const PORT = process.env.PORT || 3000;
+
+app.set('io', io);
+
 
 app.use(cors());
 app.use(express.json());

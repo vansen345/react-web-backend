@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { MessageModel } from "../models/message_model";
+import { UserModel } from "../models/user_model";
 
 
 export const saveMessage = async (req: Request, res: Response) => {
@@ -18,6 +19,7 @@ export const saveMessage = async (req: Request, res: Response) => {
             receiverEmail,
             receiverAvatar,
         });
+        req.app.get('io').to(roomId).emit('receiveMessage', newMessage);
 
         res.status(200).json({ status: "true", message: "Message saved", elements: 1 });
     } catch (error) {
@@ -33,5 +35,17 @@ export const getMessages = async (req: Request, res: Response) => {
         res.status(200).json({ status: "true", elements: messages });
     } catch (error) {
         res.status(500).json({ status: "error", message: "Get messages failed" });
+    }
+};
+
+export const getListUserMessages = async (req: Request, res: Response) => {
+    try {
+        const limit = Number(req.query.limit) || 10;
+        const offset = Number(req.query.offset) || 0;
+        const list = await UserModel.find().skip(offset).limit(limit);
+
+        res.status(200).json({ status: "true", elements: list });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: "Get user messages failed" });
     }
 };

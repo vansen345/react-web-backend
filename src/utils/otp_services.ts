@@ -20,3 +20,12 @@ export const verifyOtp = (email:string,otp:string)=>{
     otpStore.delete(email);
     return true;
 }
+
+export const normalizeEmail = (email: string): string => {
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    const local = parts[0] ?? "";
+    const domain = parts[1] ?? "";
+    const normalizedLocal = local.split('+')[0] ?? local;
+    return `${normalizedLocal}@${domain}`;
+};
