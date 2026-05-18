@@ -86,17 +86,16 @@ console.log("REDIS_URL before connect:", process.env.REDIS_URL);
 // });
 
 const redisClient = createClient({
-    url: process.env.REDIS_URL!,
-    socket: {
-        tls: true,
-        rejectUnauthorized: false,
-        reconnectStrategy: (retries) => Math.min(retries * 50, 500),
-    }
-}); 
+  url: process.env.REDIS_URL!,
+});
 
 redisClient.on('error', (err) => console.log('Redis error:', err));
 redisClient.on('reconnecting', () => console.log('Redis reconnecting...'));
 redisClient.connect().catch(console.error);
+
+console.log('Redis connected');
+
+// console.log(redisClient.options);
 
 app.set('trust proxy', 1); // ← thêm dòng này trước session
 app.use(session({
@@ -135,3 +134,4 @@ mongoose.connect(process.env.MONGO_URI!)
   .catch((err) => console.log('❌ MongoDB error:', err));
 
 
+// NODE_ENV=development
