@@ -48,9 +48,31 @@ export const getListUserMessages = async (req: Request, res: Response) => {
     try {
         const limit = Number(req.query.limit) || 10;
         const offset = Number(req.query.offset) || 0;
+
         const list = await UserModel.find().skip(offset).limit(limit);
 
-        res.status(200).json({ status: "true", elements: list });
+        // Với mỗi user, lấy tin nhắn mới nhất
+        const listWithLastMessage = await Promise.all(
+            list.map(async (user) => {
+                const lastMessage = await MessageModel.findOne({
+                    $or: [
+                        { senderId: user._id.toString() },
+                        { receiverId: user._id.toString() },
+                    ],
+                })
+                .sort({ createdAt: -1 }) // mới nhất lên đầu
+                .select("message createdAt")  // chỉ lấy string message
+                .lean();
+
+                return {
+                    ...user.toObject(),
+                    lastMessage: lastMessage?.message || "",
+                    lastMessageAt: lastMessage?.createdAt || null,
+                };
+            })
+        );
+
+        res.status(200).json({ status: "true", elements: listWithLastMessage });
     } catch (error) {
         res.status(500).json({ status: "error", message: "Get user messages failed" });
     }

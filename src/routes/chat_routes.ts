@@ -5,6 +5,6 @@ const router = Router();
 
 router.post('/save', saveMessage);
 router.get('/list/:roomId', getMessages);
-router.get('/list/listUserChat', getListUserMessages);
+router.get('/listUserChat', getListUserMessages);
 
 export default router;
