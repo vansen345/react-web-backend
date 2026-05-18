@@ -15,8 +15,9 @@ import emailRoute from './routes/email_routes';
 import homeRoute from './routes/home_routes';
 import './type/session';
 
-dotenv.config();
-
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
