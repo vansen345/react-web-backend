@@ -69,7 +69,13 @@ io.on('connection', (socket) => {
   });
 });
 
-console.log("REDIS_URL:", process.env.REDIS_URL);
+console.log("All env:", {
+    REDIS_URL: process.env.REDIS_URL,
+    NODE_ENV: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+});
+
+console.log("REDIS_URL before connect:", process.env.REDIS_URL);
 
 // const redisClient = createClient({
 //   url: process.env.REDIS_URL!,
@@ -81,6 +87,11 @@ console.log("REDIS_URL:", process.env.REDIS_URL);
 
 const redisClient = createClient({
     url: process.env.REDIS_URL!,
+    socket: {
+        tls: true,
+        rejectUnauthorized: false,
+        reconnectStrategy: (retries) => Math.min(retries * 50, 500),
+    }
 }); 
 
 redisClient.on('error', (err) => console.log('Redis error:', err));
