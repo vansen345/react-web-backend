@@ -7,9 +7,12 @@ import { genOtp, normalizeEmail } from "../utils/otp_services";
 
 export const registerUser = async (req: Request, res: Response) => {
     try {
-        const { email } = req.body;
+        const { email, user_name } = req.body;
         if (!email) {
             return res.status(400).json({ status: "error", message: 'Email is required' });
+        }
+        if (!user_name) {
+            return res.status(400).json({ status: "error", message: 'Username is required' });
         }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -21,9 +24,9 @@ export const registerUser = async (req: Request, res: Response) => {
         }
 
         // Tự gen avatar từ email
-        const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
+        const NV126 = `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
 
-        const newUser = await UserModel.create({ email, avatar });
+        const newUser = await UserModel.create({ email, NV126, FO100: Math.floor(Math.random() * 900000) + 100000, NV106: user_name });
 
         res.status(200).json({
             status: "true",
@@ -31,7 +34,8 @@ export const registerUser = async (req: Request, res: Response) => {
             elements: {
                 id: newUser._id,
                 email: newUser.email,
-                avatar: newUser.avatar,
+                NV106: newUser.NV106,
+                NV126: newUser.NV126,
             }
         });
     } catch (error) {
@@ -69,7 +73,7 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(200).json({
             status: "true", message: "OTP sent successfully", elements: {
                 email: user.email,
-                avatar: user.avatar
+                NV126: user.NV126
             }
         });
     } catch (error) {
@@ -84,13 +88,17 @@ export const getInfoLogin = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ status: "error", message: "User not found" });
         }
+        console.log(`usrrrr ${user}`);
+
         res.status(200).json({
             status: "true",
             message: "Get profile success",
             elements: {
                 id: user._id.toString(),
                 email: user.email,
-                avatar: user.avatar,
+                NV126: user.NV126,
+                FO100: user.FO100,
+                NV106: user.NV106
             }
         });
     } catch (error) {

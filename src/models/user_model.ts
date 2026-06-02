@@ -1,25 +1,33 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IUser extends Document {
+    FO100: number;
     email: string;
-    avatar: string;
+    NV126: string;
     createdAt: Date;
     updatedAt: Date;
+    NV106: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
     {
-        email: { 
-            type: String, 
-            required: true, 
-            unique: true, 
-            lowercase: true, 
-            trim: true 
+        FO100: { type: Number },
+
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true
         },
-        avatar: { 
-            type: String, 
-            default: "" 
+        NV126: {
+            type: String,
+            default: ""
         },
+        NV106: {
+            type: String,
+            trim: true
+        }
     },
     { timestamps: true }
 );

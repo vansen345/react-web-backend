@@ -5,7 +5,7 @@ const homeSchema = new mongoose.Schema({
     FO100H: { type: Number },
     FT300: { type: Number },
     PV301: { type: String },
-    PV302: { type: String },  
+    PV302: { type: String },
     PN303: { type: Number },
     PV305: { type: String },
     PV307: { type: String },
@@ -18,7 +18,28 @@ const homeSchema = new mongoose.Schema({
     PN350: { type: Number },
 
     // ✅ Mixed cho object phức tạp
-    PO322: { type: mongoose.Schema.Types.Mixed },
+    // PO322: { type: mongoose.Schema.Types.Mixed },
+    PO322: {
+        image: [{
+            FM600: { type: Number },
+            index: { type: Number },
+            DES: { type: String, default: "" },
+            IMG: { type: String },
+            RATIO: { type: Number },
+            THUMB: { type: String },
+        }],
+        video: [{
+            FM600: { type: Number },
+            index: { type: Number },
+            THUMB: { type: String },
+            SRC: { type: String },
+            TITLE: { type: String },
+            RATIO: { type: Number },
+            duration: { type: String },
+            DES: { type: String },
+        }],
+        audio: { type: [], default: [] },
+    },
     PO323: { type: mongoose.Schema.Types.Mixed },
 
     PA316: [{

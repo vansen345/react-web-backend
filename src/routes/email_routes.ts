@@ -3,9 +3,9 @@ import { UserModel } from '../models/user_model';
 import { sendMail } from '../services/email_services';
 import { genOtp, verifyOtp } from '../utils/otp_services';
 
-const router = Router();
+const emailRoute = Router();
 
-router.post('/send', async (req, res) => {
+emailRoute.post('/send', async (req, res) => {
   try {
     const { to, subject, html } = req.body;
 
@@ -23,7 +23,7 @@ router.post('/send', async (req, res) => {
   }
 });
 
-router.post('/sendOtp', async (req, res) => {
+emailRoute.post('/sendOtp', async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -50,7 +50,7 @@ router.post('/sendOtp', async (req, res) => {
   }
 })
 
-router.post('/verifyOtp', async (req, res) => {
+emailRoute.post('/verifyOtp', async (req, res) => {
   try {
     const { email, otp } = req.body;
     if (!email || !otp) {
@@ -73,7 +73,7 @@ router.post('/verifyOtp', async (req, res) => {
 
     (req.session as any).user = {
         email: user?.email,
-        avatar: user?.avatar,
+        avatar: user?.NV126,
     };
 
     return res.status(200).json({
@@ -86,4 +86,4 @@ router.post('/verifyOtp', async (req, res) => {
   }
 })
 
-export default router;
+export default emailRoute;

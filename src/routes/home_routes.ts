@@ -1,11 +1,13 @@
 import { Router } from 'express';
-import { createPost, getList2 } from '../controllers/home_controller';
+import { upload } from '../configs/upload_media_configs';
+import { createPost, getList2, uploadImg } from '../controllers/home_controller';
 
 
-const router = Router();
+const homeRoute = Router();
 
-router.get('/getListHome', getList2);
-router.post('/createPost', createPost);
+homeRoute.get('/getListHome', getList2);
+homeRoute.post('/createPost', createPost);
+homeRoute.post('/uploadImg', upload.array('image'), uploadImg);
 
 
-export default router;
+export default homeRoute;

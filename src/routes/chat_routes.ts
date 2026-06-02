@@ -1,10 +1,16 @@
 import { Router } from 'express';
-import { getListUserMessages, getMessages, saveMessage } from '../controllers/chat_controller';
+import { getListUserMessagesNew, getMessagesNew, saveMessageNew } from '../controllers/chat_controller';
 
-const router = Router();
+const messageRoute = Router();
 
-router.post('/save', saveMessage);
-router.get('/list/:roomId', getMessages);
-router.get('/listUserChat', getListUserMessages);
+messageRoute.post('/save', saveMessageNew);
+messageRoute.get('/list/:conversationId', getMessagesNew);
 
-export default router;
+messageRoute.get('/listUserChat', getListUserMessagesNew);
+
+
+// router.get('/list/:conversationId', getMessagesNew);
+// router.get('/listUserChat', getListUserMessagesNew);
+// router.post('/saveChat', saveMessageNew);
+
+export default messageRoute;

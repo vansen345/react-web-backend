@@ -1,7 +1,9 @@
 
+import { Router } from "express";
 import { getDetail } from "../controllers/detail_controller";
-import router from "./home_routes";
 
-router.post('/getDetail', getDetail); 
+const detailRoute = Router();
 
-export default router;
+detailRoute.post('/getDetail', getDetail); 
+
+export default detailRoute;
