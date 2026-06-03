@@ -11,4 +11,5 @@ cloudinary.config({
 export default cloudinary;
 
 const storage = multer.memoryStorage();
-export const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // tối đa 5MB mỗi file 
+
+export const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } }); 

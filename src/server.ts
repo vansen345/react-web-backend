@@ -10,6 +10,8 @@ import { createServer } from 'http';
 import mongoose from 'mongoose';
 import { createClient } from 'redis';
 import { Server } from 'socket.io';
+import { HomeModel } from './models/home_model';
+import { LikeModel } from './models/like_model';
 import { IMessage, MessageModel } from './models/message_model';
 import authenRoute from './routes/authen_routes';
 import messageRoute from './routes/chat_routes';
@@ -19,6 +21,7 @@ import emailRoute from './routes/email_routes';
 import homeRoute from './routes/home_routes';
 import routerUploadMedia from './routes/upload_media_routes';
 import './type/session';
+
 
 
 const app = express();
@@ -65,6 +68,20 @@ io.on('connection', (socket) => {
       callback({
         success: false,
       });
+    }
+  });
+
+  socket.on('likePost', async (data: { PP300: number, FO100: number, isLiked: boolean }) => {
+    try {
+      if (data.isLiked) {
+        await LikeModel.deleteOne({ PP300: data.PP300, FO100: data.FO100 });
+        await HomeModel.findOneAndUpdate({ PP300: data.PP300 }, { $inc: { TOTALLIKES: -1 } });
+      } else {
+        await LikeModel.create({ PP300: data.PP300, FO100: data.FO100 });
+        await HomeModel.findOneAndUpdate({ PP300: data.PP300 }, { $inc: { TOTALLIKES: 1 } });
+      }
+    } catch (error) {
+      console.log(error);
     }
   });
 

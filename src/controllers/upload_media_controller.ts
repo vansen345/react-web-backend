@@ -50,10 +50,12 @@ export const uploadMedia = async (req: Request, res: Response) => {
                     resource_type: isVideo ? 'video' : 'image',
                 });
 
+               console.log('height', uploaded.height, 'width', uploaded.width);
+
                 if (isVideo) {
                     return {
                         FM600: Math.floor(Math.random() * 900000) + 100000,
-                        RATIO: uploaded.height > 0 ? uploaded.height / uploaded.width : 1,
+                        RATIO: uploaded.width > 0 ? uploaded.width / uploaded.height : 1,
                         index: index + 1,
                         SRC: uploaded.secure_url,
                         THUMB: uploaded.secure_url.replace('/upload/', '/upload/w_720/so_0/').replace(/\.[^.]+$/, '.jpg'), DES: "",
@@ -75,6 +77,7 @@ export const uploadMedia = async (req: Request, res: Response) => {
 
         res.status(200).json({ status: 'success', elements: result });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ status: 'error', message: 'Upload media failed', error });
     }
 };

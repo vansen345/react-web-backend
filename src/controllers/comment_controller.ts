@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import admin from 'firebase-admin';
 import { firestore } from '../configs/firebase_configs';
 import { CommentModel } from '../models/comment_model';
-import Home from '../models/home_model';
+import { HomeModel } from "../models/home_model";
 
 export const insertComment = async (req: Request, res: Response) => {
     try {
@@ -20,7 +20,7 @@ export const insertComment = async (req: Request, res: Response) => {
             NV106,
             NV126,
         });
-        await Home.findOneAndUpdate(
+        await HomeModel.findOneAndUpdate(
             { PP300 },
             { $inc: { TOTALCOMMENTS: 1 } }
         );

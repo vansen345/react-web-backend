@@ -67,4 +67,4 @@ const homeSchema = new mongoose.Schema({
 homeSchema.index({ PV325: 1, PP300: 1, FT300: 1 });
 
 
-export default mongoose.model('Home', homeSchema);
+export const HomeModel= mongoose.model('Home', homeSchema);

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CommentModel } from '../models/comment_model';
-import Home from '../models/home_model';
+import { HomeModel } from '../models/home_model';
 
 export const getDetail = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,7 @@ export const getDetail = async (req: Request, res: Response) => {
     const PP300 = Number(req.body.PP300);
     const FT300 = Number(req.body.FT300);
     console.log('Query params:', { PV325, PP300, FT300 });
-    const item = await Home.findOne({
+    const item = await HomeModel.findOne({
       PV325: PV325,
       PP300: PP300,
       FT300: FT300,

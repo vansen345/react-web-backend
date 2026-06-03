@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import cloudinary from '../configs/upload_media_configs';
 import { CommentModel } from '../models/comment_model';
-import Home from '../models/home_model';
+import { HomeModel } from '../models/home_model';
+import { LikeModel } from '../models/like_model';
 
 
 export const getList = async (req: Request, res: Response) => {
   try {
-    const posts = await Home.find();
+    const posts = await HomeModel.find();
     res.json({
       status: 'success',
       timesv: new Date().toISOString(),
@@ -25,8 +26,12 @@ export const getList2 = async (req: Request, res: Response) => {
   try {
     const limit = Number(req.query.limit) || 10;
     const offset = Number(req.query.offset) || 0;
+    const FO100 = Number(req.query.FO100) || 0;
 
-    const items = await Home.find()
+    
+
+
+    const items = await HomeModel.find()
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
@@ -34,10 +39,15 @@ export const getList2 = async (req: Request, res: Response) => {
     const itemsWithComments = await Promise.all(
       items.map(async (item) => {
         const totalComments = await CommentModel.countDocuments({ PP300: item.PP300 });
-        return { ...item.toObject(), TOTALCOMMENTS: totalComments };
+        const liked = FO100 ? await LikeModel.findOne({ PP300: item.PP300, FO100 }) : null;
+        return {
+          ...item.toObject(),
+          TOTALCOMMENTS: totalComments,
+          ISLIKED: liked ? 1 : 0,
+        };
       })
     );
-    const total = await Home.countDocuments();
+    const total = await HomeModel.countDocuments();
 
     res.json({
       status: 'success',
@@ -53,7 +63,7 @@ export const getList2 = async (req: Request, res: Response) => {
       timesv: new Date().toISOString(),
       message: 'Internal server error',
     });
-  } 
+  }
 };
 
 
@@ -73,7 +83,7 @@ export const createPost = async (req: Request, res: Response) => {
 
     console.log("Received data:", { PV301, PV305, PL348, imageList, videoList, FO100, NV106, NV126 });
 
-    const newPost = new Home({
+    const newPost = new HomeModel({
       PV301,
       PV305,
       PL348: PL348 || new Date(),
