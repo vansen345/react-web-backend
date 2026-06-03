@@ -53,6 +53,7 @@ export const uploadMedia = async (req: Request, res: Response) => {
                 if (isVideo) {
                     return {
                         FM600: Math.floor(Math.random() * 900000) + 100000,
+                        RATIO: uploaded.height > 0 ? uploaded.height / uploaded.width : 1,
                         index: index + 1,
                         SRC: uploaded.secure_url,
                         THUMB: uploaded.secure_url.replace('/upload/', '/upload/w_720/so_0/').replace(/\.[^.]+$/, '.jpg'), DES: "",
