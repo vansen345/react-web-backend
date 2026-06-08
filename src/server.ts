@@ -20,6 +20,7 @@ import detailRoute from './routes/detail_routes';
 import emailRoute from './routes/email_routes';
 import homeRoute from './routes/home_routes';
 import routerUploadMedia from './routes/upload_media_routes';
+import userRouter from './routes/user_routes';
 import './type/session';
 
 
@@ -142,6 +143,7 @@ app.use('/api/login', authenRoute);
 app.use('/api/message', messageRoute);
 app.use('/api/comment', commentRoute);
 app.use('/api/media', routerUploadMedia);
+app.use('/api/profile', userRouter);
 
 app.get('/piepapi/services', (req, res) => {
   res.json({ status: 'ok' })
@@ -157,5 +159,3 @@ mongoose.connect(process.env.MONGO_URI!)
   })
   .catch((err) => console.log('❌ MongoDB error:', err));
 
-
-// NODE_ENV=development

@@ -29,15 +29,26 @@ export const insertComment = async (req: Request, res: Response) => {
 
 
         // bắn event vào Firestore
-        await firestore.collection('comments').add({
-            PP300,
-            comment,
-            FO100,
-            NV106,
-            NV126,
-            mongoId: newComment._id.toString(),
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
+        // await firestore.collection('comments').add({
+        //     PP300,
+        //     comment,
+        //     FO100,
+        //     NV106,
+        //     NV126,
+        //     mongoId: newComment._id.toString(),
+        //     createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        // });
+        await firestore.collection('comments')
+            .doc(newComment._id.toString())
+            .set({
+                PP300,
+                comment,
+                FO100,
+                NV106,
+                NV126,
+                mongoId: newComment._id.toString(),
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
 
         res.status(200).json({ status: 'success', elements: newComment });
     } catch (error) {

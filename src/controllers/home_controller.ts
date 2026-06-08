@@ -28,7 +28,7 @@ export const getList2 = async (req: Request, res: Response) => {
     const offset = Number(req.query.offset) || 0;
     const FO100 = Number(req.query.FO100) || 0;
 
-    
+
 
 
     const items = await HomeModel.find()
@@ -131,6 +131,30 @@ export const createPost = async (req: Request, res: Response) => {
     });
   }
 }
+
+export const deletePost = async (req: Request, res: Response) => {
+  try {
+    const { PP300, FT300, FO100 } = req.body;
+
+    if (!PP300) {
+      return res.status(400).json({ status: 'error', message: 'PP300 là bắt buộc' });
+    }
+    if (!FT300 && FT300 !== 0) {
+      return res.status(400).json({ status: 'error', message: 'FT300 là bắt buộc' });
+    }
+    if (!FO100) {
+      return res.status(400).json({ status: 'error', message: 'FO100 là bắt buộc' });
+    }
+
+    const deleted = await HomeModel.findOneAndDelete({ PP300, FT300, FO100 });
+
+    if (!deleted) return res.status(404).json({ status: 'error', message: 'Không tìm thấy bài', elements: -1 });
+
+    res.json({ status: 'success', elements: 1 });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: 'Internal server error' });
+  }
+};
 
 // export const uploadImg = async (req: Request, res: Response) => {
 //   try {
