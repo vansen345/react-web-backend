@@ -28,9 +28,6 @@ export const getList2 = async (req: Request, res: Response) => {
     const offset = Number(req.query.offset) || 0;
     const FO100 = Number(req.query.FO100) || 0;
 
-
-
-
     const items = await HomeModel.find()
       .sort({ createdAt: -1 })
       .skip(offset)
@@ -226,3 +223,65 @@ export const uploadImg = async (req: Request, res: Response) => {
   }
 }
 
+export const updatePost = async (req: Request, res: Response) => {
+  try {
+    const {
+      PP300,
+      FT300,
+      FO100,
+      PV301,
+      PV305,
+      PO322,
+    } = req.body;
+
+    if (
+      PP300 === undefined ||
+      FT300 === undefined ||
+      FO100 === undefined
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "PP300, FT300, FO100 là bắt buộc",
+        elements: -1,
+      });
+    }
+
+    const updateFields: Record<string, any> = {};
+
+    if (PV301 !== undefined) updateFields.PV301 = PV301;
+    if (PV305 !== undefined) updateFields.PV305 = PV305;
+    if (PO322 !== undefined) updateFields.PO322 = PO322;
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "Không có dữ liệu cần cập nhật",
+        elements: -1,
+      });
+    }
+
+    const updated = await HomeModel.findOneAndUpdate(
+      { PP300 },
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        status: "error",
+        message: "Không tìm thấy bài viết",
+        elements: -1,
+      });
+    }
+
+    return res.json({
+      status: "success",
+      elements: 1,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+};
