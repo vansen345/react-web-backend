@@ -10,10 +10,10 @@ export const saveMessageNew = async (req: Request, res: Response) => {
     try {
 
         console.log('body:', req.body);
-        const { conversationId, message, senderId, senderEmail, senderAvatar, receiverId, receiverEmail, receiverAvatar } = req.body;
+        const { conversationId, message, senderId, senderEmail, senderAvatar, receiverId, receiverEmail, receiverAvatar,senderName,receiverName } = req.body;
 
-        const sender = await UserModel.findById(senderId).select("user_name").lean();
-        const receiver = await UserModel.findById(receiverId).select("user_name").lean();
+        // const sender = await UserModel.findById(senderId).select("user_name").lean();
+        // const receiver = await UserModel.findById(receiverId).select("user_name").lean();
         const newMessage = await MessageModel.create({
             conversationId,
             message,
@@ -23,9 +23,10 @@ export const saveMessageNew = async (req: Request, res: Response) => {
             receiverId,
             receiverEmail,
             receiverAvatar,
-            senderName: sender?.NV106 || "",
-            receiverName: receiver?.NV106 || "",
+            senderName: senderName,
+            receiverName: receiverName,
         });
+        console.log('senderrrrrrr', senderName);
         const io = req.app.get('io');
 
         // realtime cho receiver
