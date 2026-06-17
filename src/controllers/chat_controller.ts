@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
+import { FriendModel } from "../models/friend_model";
 import { MessageModel } from "../models/message_model";
 import { ConversationModel } from "../models/user_chat_model";
 import { UserModel } from "../models/user_model";
-
-
 
 
 export const saveMessageNew = async (req: Request, res: Response) => {
@@ -62,50 +61,51 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
     try {
         const limit = Number(req.query.limit) || 10;
         const offset = Number(req.query.offset) || 0;
-        const currentEmail = req.headers["x-user-email"] as string;
-        const currentUser = await UserModel.findOne({ email: currentEmail });
+        const FO100 = Number(req.query.FO100);
 
+        const currentUser = await UserModel.findOne({ FO100 });
         if (!currentUser) {
             return res.status(401).json({ status: "error", message: "User not found" });
         }
 
-        const list = await UserModel.find({
-            ...(currentEmail && { email: { $ne: currentEmail } })
-        }).skip(offset).limit(limit);
+        // chỉ lấy bạn bè đã accepted
+        const friendships = await FriendModel.find({
+            $or: [
+                { FO100S: FO100, status: "accepted" },
+                { FO100R: FO100, status: "accepted" },
+            ]
+        });
 
-        console.log("currentEmail", currentEmail);
-        console.log("currentUser", currentUser);
+        const friendFO100s = friendships.map(f =>
+            f.FO100S === FO100 ? f.FO100R : f.FO100S
+        );
+
+        const list = await UserModel.find({
+            FO100: { $in: friendFO100s }
+        }).skip(offset).limit(limit);
 
         const listWithLastMessage = await Promise.all(
             list.map(async (user) => {
-                // tìm conversation giữa 2 user
                 let conversation = await ConversationModel.findOne({
                     $or: [
                         { userOneId: currentUser._id.toString(), userTwoId: user._id.toString() },
                         { userOneId: user._id.toString(), userTwoId: currentUser._id.toString() },
                     ],
                 });
-                console.log("conversation", conversation);
-                console.log("userOneId", currentUser._id.toString());
-                console.log("userTwoId", user._id.toString());
+
                 if (!conversation) {
-                    console.log("tạo conversation mới");
                     conversation = await ConversationModel.create({
                         conversationId: Math.floor(Math.random() * 900000) + 100000,
                         userOneId: currentUser._id.toString(),
                         userTwoId: user._id.toString(),
                     });
-                    console.log("conversation mới", conversation);
                 }
-                const lastMessage = conversation
-                    ? await MessageModel.findOne({ conversationId: conversation.conversationId })
-                        .sort({ createdAt: -1 })
-                        .select("message createdAt")
-                        .lean()
-                    : null;
 
-                console.log("conversation trước return", conversation, lastMessage?.message);
-                console.log("conversationId value", conversation?.conversationId);
+                const lastMessage = await MessageModel.findOne({ conversationId: conversation.conversationId })
+                    .sort({ createdAt: -1 })
+                    .select("message createdAt")
+                    .lean();
+
                 return {
                     ...user.toObject(),
                     conversationId: conversation?.conversationId || null,
@@ -117,6 +117,7 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
 
         res.status(200).json({ status: "true", elements: listWithLastMessage });
     } catch (error) {
+        console.log("getListUserMessagesNew error:", error);
         res.status(500).json({ status: "error", message: "Get user messages failed" });
     }
 };

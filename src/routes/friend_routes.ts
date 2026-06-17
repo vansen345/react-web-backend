@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { acceptFriendRequest, cancelFriendRequest, rejectFriendRequest, sendFriendRequest } from "../controllers/friend_controller";
+
+const friendRoute = Router();
+
+friendRoute.post("/send", sendFriendRequest);
+friendRoute.post("/accept", acceptFriendRequest);
+friendRoute.post("/cancleRequets", cancelFriendRequest);
+friendRoute.post("/rejectFriend", rejectFriendRequest);
+
+export default friendRoute;

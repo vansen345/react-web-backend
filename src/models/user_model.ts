@@ -7,6 +7,8 @@ export interface IUser extends Document {
     createdAt: Date;
     updatedAt: Date;
     NV106: string;
+    isOnline: boolean;
+    lastSeen: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -17,7 +19,7 @@ const userSchema = new mongoose.Schema<IUser>(
             type: String,
             required: true,
             unique: true,
-            lowercase: true,
+            lowercase: true, 
             trim: true
         },
         NV126: {
@@ -27,7 +29,12 @@ const userSchema = new mongoose.Schema<IUser>(
         NV106: {
             type: String,
             trim: true
-        }
+        },
+        isOnline: {
+            type: Boolean,
+            default: false
+        },
+        lastSeen: { type: Date }
     },
     { timestamps: true }
 );

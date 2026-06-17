@@ -1,16 +1,35 @@
 import { Request, Response } from 'express';
 import { CommentModel } from '../models/comment_model';
+import { FriendModel } from '../models/friend_model';
 import { HomeModel } from '../models/home_model';
 import { LikeModel } from '../models/like_model';
 import { UserModel } from '../models/user_model';
 
 export const getProfile = async (req: Request, res: Response) => {
+    console.log('getProfilegetProfile');
+    
     try {
-
         const FO100 = Number(req.body.FO100) || 0;
+        const myFO100 = Number(req.body.myFO100) || 0;
+
         const user = await UserModel.findOne({ FO100 });
-        console.log(user);
         if (!user) return res.status(404).json({ status: 'error', message: 'User not found' });
+
+        let FRIEND_STATUS: "none" | "pending" | "accepted" = "none";
+        let FO100S: number | null = null;
+
+        if (myFO100) {
+            const friendship = await FriendModel.findOne({
+                $or: [
+                    { FO100S: myFO100, FO100R: FO100 },
+                    { FO100S: FO100, FO100R: myFO100 },
+                ]
+            });
+            if (friendship) {
+                FRIEND_STATUS = friendship.status as "pending" | "accepted";
+                FO100S = friendship.FO100S;
+            }
+        }
 
         res.json({
             status: 'success',
@@ -19,12 +38,13 @@ export const getProfile = async (req: Request, res: Response) => {
                 NV106: user.NV106,
                 NV126: user.NV126,
                 email: user.email,
+                FRIEND_STATUS,
+                FO100S,
             }
         });
     } catch (err) {
         res.status(500).json({
             status: 'error',
-            timesv: new Date().toISOString(),
             message: 'Internal server error',
         });
     }

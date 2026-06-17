@@ -18,6 +18,7 @@ import messageRoute from './routes/chat_routes';
 import commentRoute from './routes/comment_routes';
 import detailRoute from './routes/detail_routes';
 import emailRoute from './routes/email_routes';
+import friendRoute from './routes/friend_routes';
 import homeRoute from './routes/home_routes';
 import routerUploadMedia from './routes/upload_media_routes';
 import userRouter from './routes/user_routes';
@@ -128,7 +129,7 @@ app.use(session({
   saveUninitialized: false,
   rolling: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // ← true khi production
+    secure: process.env.NODE_ENV === 'production', 
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000
   }
@@ -144,6 +145,7 @@ app.use('/api/message', messageRoute);
 app.use('/api/comment', commentRoute);
 app.use('/api/media', routerUploadMedia);
 app.use('/api/profile', userRouter);
+app.use('/api/friend', friendRoute);
 
 app.get('/piepapi/services', (req, res) => {
   res.json({ status: 'ok' })
