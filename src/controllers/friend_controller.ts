@@ -80,3 +80,20 @@ export const rejectFriendRequest = async (req: Request, res: Response) => {
         res.status(500).json({ status: "error", message: "Reject friend request failed", elements: -1 });
     }
 };
+
+export const unfriend = async (req: Request, res: Response) => {
+    try {
+        const { FO100S, FO100R } = req.body;
+
+        await FriendModel.findOneAndDelete({
+            $or: [
+                { FO100S, FO100R, status: "accepted" },
+                { FO100S: FO100R, FO100R: FO100S, status: "accepted" },
+            ]
+        });
+
+        res.status(200).json({ status: "success", message: "Unfriend success", elements: 1 });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: "Unfriend failed", elements: -1 });
+    }
+};

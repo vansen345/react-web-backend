@@ -13,6 +13,7 @@ export interface IMessage extends Document {
     senderName?:string;
     receiverName?:string;
     createdAt: Date;
+    isRead:boolean;
 }
 
 const messageSchema = new Schema<IMessage>(
@@ -28,6 +29,7 @@ const messageSchema = new Schema<IMessage>(
         receiverAvatar: { type: String },
         senderName: { type: String },
         receiverName: { type: String },
+        isRead: { type: Boolean, default: false }
     },
     { timestamps: true }
 );

@@ -9,7 +9,7 @@ export const saveMessageNew = async (req: Request, res: Response) => {
     try {
 
         console.log('body:', req.body);
-        const { conversationId, message, senderId, senderEmail, senderAvatar, receiverId, receiverEmail, receiverAvatar,senderName,receiverName } = req.body;
+        const { conversationId, message, senderId, senderEmail, senderAvatar, receiverId, receiverEmail, receiverAvatar, senderName, receiverName } = req.body;
 
         // const sender = await UserModel.findById(senderId).select("user_name").lean();
         // const receiver = await UserModel.findById(receiverId).select("user_name").lean();
@@ -48,9 +48,28 @@ export const getMessagesNew = async (req: Request, res: Response) => {
         const { conversationId } = req.params;
         const limit = Number(req.query.limit);
         const offset = Number(req.query.offset);
-        console.log("conversationId", conversationId);
-        const messages = await MessageModel.find({ conversationId: Number(conversationId) }).sort({ createdAt: -1 }).skip(offset).limit(limit);
-        console.log("messages", messages);
+        const FO100 = Number(req.query.FO100);
+
+        const messages = await MessageModel.find({ conversationId: Number(conversationId) })
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
+
+
+        if (FO100) {
+            const currentUser = await UserModel.findOne({ FO100 });
+            if (currentUser) {
+                await MessageModel.updateMany(
+                    {
+                        conversationId: Number(conversationId),
+                        senderId: { $ne: currentUser._id.toString() },
+                        isRead: false
+                    },
+                    { isRead: true }
+                );
+            }
+        }
+
         res.status(200).json({ status: "true", elements: messages.reverse() });
     } catch (error) {
         res.status(500).json({ status: "error", message: "Get messages failed" });
@@ -58,6 +77,8 @@ export const getMessagesNew = async (req: Request, res: Response) => {
 };
 
 export const getListUserMessagesNew = async (req: Request, res: Response) => {
+    console.log('getListUserMessagesNew');
+
     try {
         const limit = Number(req.query.limit) || 10;
         const offset = Number(req.query.offset) || 0;
@@ -121,6 +142,22 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
         res.status(500).json({ status: "error", message: "Get user messages failed" });
     }
 };
+
+export const checkReadedMess = async (req: Request, res: Response) => {
+    try {
+        const { conversationId, FO100 } = req.body;
+        const currentUser = await UserModel.findOne({ FO100 });
+        if (!currentUser) return res.status(401).json({ status: "error", message: "User not found" });
+        
+        await MessageModel.updateMany(
+            { conversationId, senderId: { $ne: currentUser._id.toString() }, isRead: false },
+            { isRead: true }
+        );
+        res.status(200).json({ status: "success", elements: 1 });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: "Check readed mess failed" });
+    }
+}
 
 // export const getOrCreateRoom = async (req: Request, res: Response) => {
 //     try {
