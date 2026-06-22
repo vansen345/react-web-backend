@@ -7,8 +7,8 @@ import { UserModel } from "../models/user_model";
 
 export const saveMessageNew = async (req: Request, res: Response) => {
     try {
-        const { 
-            conversationId, message, senderId, senderEmail, senderAvatar, 
+        const {
+            conversationId, message, senderId, senderEmail, senderAvatar,
             receiverId, receiverEmail, receiverAvatar, senderName, receiverName,
             type, media
         } = req.body;
@@ -34,7 +34,7 @@ export const saveMessageNew = async (req: Request, res: Response) => {
 
         res.status(200).json({ status: "true", message: "Message saved", elements: 1 });
     } catch (error) {
-          console.log('saveMessageNew error:', error);
+        console.log('saveMessageNew error:', error);
         res.status(500).json({ status: "error", message: "Save message failed" });
     }
 };
@@ -121,7 +121,7 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
 
                 const lastMessage = await MessageModel.findOne({ conversationId: conversation.conversationId })
                     .sort({ createdAt: -1 })
-                    .select("message createdAt senderId isRead")
+                    .select("message createdAt senderId isRead type senderName")
                     .lean();
 
                 const isUnread = lastMessage
@@ -132,6 +132,9 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
                     ...user.toObject(),
                     conversationId: conversation?.conversationId || null,
                     lastMessage: lastMessage?.message || "",
+                    lastMessageType: lastMessage?.type || "text",
+                    lastMessageSenderId: lastMessage?.senderId || "",
+                    lastMessageSenderName: lastMessage?.senderName || "",
                     lastMessageAt: lastMessage?.createdAt || null,
                     isUnread,
                 };
