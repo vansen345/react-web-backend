@@ -10,17 +10,29 @@ export interface IMessage extends Document {
     receiverId?: string;
     receiverEmail?: string;
     receiverAvatar?: string;
-    senderName?:string;
-    receiverName?:string;
+    senderName?: string;
+    receiverName?: string;
     createdAt: Date;
-    isRead:boolean;
+    isRead: boolean;
+    type?: "text" | "sticker" | "image";
+    media?: {
+        image?: {
+            FM600?: number;
+            index?: number;
+            DES?: string;
+            IMG?: string;
+            RATIO?: number;
+            THUMB?: string;
+        }[];
+    }
+
 }
 
 const messageSchema = new Schema<IMessage>(
     {
         conversationId: { type: Number },
         roomId: { type: String },
-        message: { type: String, required: true },
+        message: { type: String },
         senderId: { type: String, required: true },
         senderEmail: { type: String, required: true },
         senderAvatar: { type: String },
@@ -29,7 +41,19 @@ const messageSchema = new Schema<IMessage>(
         receiverAvatar: { type: String },
         senderName: { type: String },
         receiverName: { type: String },
-        isRead: { type: Boolean, default: false }
+        isRead: { type: Boolean, default: false },
+        type: { type: String, enum: ["text", "sticker", "image"], default: "text" },
+
+        media: {
+            image: [{
+                FM600: { type: Number },
+                index: { type: Number },
+                DES: { type: String, default: "" },
+                IMG: { type: String },
+                RATIO: { type: Number },
+                THUMB: { type: String },
+            }],
+        }
     },
     { timestamps: true }
 );

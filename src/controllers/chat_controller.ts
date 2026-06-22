@@ -7,12 +7,12 @@ import { UserModel } from "../models/user_model";
 
 export const saveMessageNew = async (req: Request, res: Response) => {
     try {
+        const { 
+            conversationId, message, senderId, senderEmail, senderAvatar, 
+            receiverId, receiverEmail, receiverAvatar, senderName, receiverName,
+            type, media
+        } = req.body;
 
-        console.log('body:', req.body);
-        const { conversationId, message, senderId, senderEmail, senderAvatar, receiverId, receiverEmail, receiverAvatar, senderName, receiverName } = req.body;
-
-        // const sender = await UserModel.findById(senderId).select("user_name").lean();
-        // const receiver = await UserModel.findById(receiverId).select("user_name").lean();
         const newMessage = await MessageModel.create({
             conversationId,
             message,
@@ -22,23 +22,19 @@ export const saveMessageNew = async (req: Request, res: Response) => {
             receiverId,
             receiverEmail,
             receiverAvatar,
-            senderName: senderName,
-            receiverName: receiverName,
+            senderName,
+            receiverName,
+            type: type || "text",
+            media: media || null,
         });
-        console.log('senderrrrrrr', senderName);
+
         const io = req.app.get('io');
-
-        // realtime cho receiver
         io.to(receiverId).emit('receiveMessage', newMessage);
-
-        // realtime cho sender
         io.to(senderId).emit('receiveMessage', newMessage);
-
-        console.log('emit to:', receiverId, senderId)
 
         res.status(200).json({ status: "true", message: "Message saved", elements: 1 });
     } catch (error) {
-        console.log('error detail:', error);
+          console.log('saveMessageNew error:', error);
         res.status(500).json({ status: "error", message: "Save message failed" });
     }
 };
@@ -50,12 +46,7 @@ export const getMessagesNew = async (req: Request, res: Response) => {
         const offset = Number(req.query.offset);
         const FO100 = Number(req.query.FO100);
 
-        const messages = await MessageModel.find({ conversationId: Number(conversationId) })
-            .sort({ createdAt: -1 })
-            .skip(offset)
-            .limit(limit);
-
-
+        // mark as read trước
         if (FO100) {
             const currentUser = await UserModel.findOne({ FO100 });
             if (currentUser) {
@@ -69,6 +60,12 @@ export const getMessagesNew = async (req: Request, res: Response) => {
                 );
             }
         }
+
+        // fetch sau
+        const messages = await MessageModel.find({ conversationId: Number(conversationId) })
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
 
         res.status(200).json({ status: "true", elements: messages.reverse() });
     } catch (error) {
@@ -98,7 +95,7 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
         });
 
         const friendFO100s = friendships.map(f =>
-            f.FO100S === FO100 ? f.FO100R : f.FO100S
+            Number(f.FO100S) === FO100 ? Number(f.FO100R) : Number(f.FO100S)
         );
 
         const list = await UserModel.find({
@@ -124,14 +121,19 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
 
                 const lastMessage = await MessageModel.findOne({ conversationId: conversation.conversationId })
                     .sort({ createdAt: -1 })
-                    .select("message createdAt")
+                    .select("message createdAt senderId isRead")
                     .lean();
+
+                const isUnread = lastMessage
+                    ? lastMessage.senderId !== currentUser._id.toString() && !lastMessage.isRead
+                    : false;
 
                 return {
                     ...user.toObject(),
                     conversationId: conversation?.conversationId || null,
                     lastMessage: lastMessage?.message || "",
                     lastMessageAt: lastMessage?.createdAt || null,
+                    isUnread,
                 };
             })
         );
@@ -148,14 +150,14 @@ export const checkReadedMess = async (req: Request, res: Response) => {
         const { conversationId, FO100 } = req.body;
         const currentUser = await UserModel.findOne({ FO100 });
         if (!currentUser) return res.status(401).json({ status: "error", message: "User not found" });
-        
+
         await MessageModel.updateMany(
             { conversationId, senderId: { $ne: currentUser._id.toString() }, isRead: false },
             { isRead: true }
         );
         res.status(200).json({ status: "success", elements: 1 });
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Check readed mess failed" });
+        res.status(500).json({ status: "error", message: "Check readed mess failed", elements: -1 });
     }
 }
 
