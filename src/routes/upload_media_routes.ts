@@ -4,7 +4,7 @@ import { uploadMedia } from '../controllers/upload_media_controller';
 
 const routerUploadMedia = Router();
 
-routerUploadMedia.post('/uploadMedia', upload.array('media'), uploadMedia);
+routerUploadMedia.post('/uploadMedia', upload.any(), uploadMedia);
 
 export default routerUploadMedia;
 

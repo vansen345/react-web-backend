@@ -84,3 +84,33 @@ export const getPostByUser = async (req: Request, res: Response) => {
     }
 };
 
+export const updateProfile = async (req: Request, res: Response) => {
+    try {
+        const FO100 = Number(req.body.FO100) || 0;
+        const NV106 = req.body.NV106 as string;
+        const NV126 = req.body.NV126 as string;
+
+        const user = await UserModel.findOneAndUpdate(
+            { FO100 },
+            { NV106, NV126 },
+            { new: true }
+        );
+
+        if (!user) return res.status(404).json({ status: 'error', message: 'User not found' });
+
+        res.json({
+            status: 'success',
+            elements: {
+                FO100: user.FO100,
+                NV106: user.NV106,
+                NV126: user.NV126,
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+        });
+    }
+}
+
