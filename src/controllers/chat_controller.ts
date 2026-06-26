@@ -10,7 +10,7 @@ export const saveMessageNew = async (req: Request, res: Response) => {
         const {
             conversationId, message, senderId, senderEmail, senderAvatar,
             receiverId, receiverEmail, receiverAvatar, senderName, receiverName,
-            type, media
+            type, media, replyTo
         } = req.body;
 
         const newMessage = await MessageModel.create({
@@ -26,6 +26,7 @@ export const saveMessageNew = async (req: Request, res: Response) => {
             receiverName,
             type: type || "text",
             media: media || null,
+            replyTo: replyTo || null,
         });
 
         const io = req.app.get('io');

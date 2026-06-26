@@ -24,6 +24,22 @@ export interface IMessage extends Document {
             RATIO?: number;
             THUMB?: string;
         }[];
+    };
+    replyTo?: {
+        _id: string;
+        message: string;
+        senderName: string;
+        type: string;
+        media?: {
+            image?: {
+                FM600?: number;
+                index?: number;
+                DES?: string;
+                IMG?: string;
+                RATIO?: number;
+                THUMB?: string;
+            }[];
+        };
     }
 
 }
@@ -53,6 +69,24 @@ const messageSchema = new Schema<IMessage>(
                 RATIO: { type: Number },
                 THUMB: { type: String },
             }],
+        },
+
+        replyTo: {
+            _id: { type: String },
+            message: { type: String },
+            senderName: { type: String },
+            type: { type: String },
+            media: {
+                image: [{
+                    FM600: { type: Number },
+                    index: { type: Number },
+                    DES: { type: String, default: "" },
+                    IMG: { type: String },
+                    RATIO: { type: Number },
+                    THUMB: { type: String },
+                }]
+            }
+
         }
     },
     { timestamps: true }

@@ -194,8 +194,8 @@ export const deletePost = async (req: Request, res: Response) => {
 export const uploadImg = async (req: Request, res: Response) => {
   try {
     const files = req.files as Express.Multer.File[];
-    console.log("req.files", req.files);
-    console.log("req.headers", req.headers["content-type"]);
+    const folder = req.body.folder || 'posts';
+    
     if (!files || files.length === 0) {
       return res.status(400).json({ status: 'error', message: 'Image is required' });
     }
@@ -204,7 +204,7 @@ export const uploadImg = async (req: Request, res: Response) => {
       files.map(async (file, index) => {
         const base64 = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
         const uploaded = await cloudinary.uploader.upload(base64, {
-          folder: 'posts',
+          folder,
         });
         return {
           FM600: Math.floor(Math.random() * 900000) + 100000,
