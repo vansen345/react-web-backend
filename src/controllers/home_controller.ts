@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import cloudinary from '../configs/upload_media_configs';
 import { CommentModel } from '../models/comment_model';
 import { HomeModel } from '../models/home_model';
 import { LikeModel } from '../models/like_model';
@@ -191,37 +190,37 @@ export const deletePost = async (req: Request, res: Response) => {
 
 // }
 
-export const uploadImg = async (req: Request, res: Response) => {
-  try {
-    const files = req.files as Express.Multer.File[];
-    const folder = req.body.folder || 'posts';
+// export const uploadImg = async (req: Request, res: Response) => {
+//   try {
+//     const files = req.files as Express.Multer.File[];
+//     const folder = req.body.folder || 'posts';
     
-    if (!files || files.length === 0) {
-      return res.status(400).json({ status: 'error', message: 'Image is required' });
-    }
+//     if (!files || files.length === 0) {
+//       return res.status(400).json({ status: 'error', message: 'Image is required' });
+//     }
 
-    const result = await Promise.all(
-      files.map(async (file, index) => {
-        const base64 = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
-        const uploaded = await cloudinary.uploader.upload(base64, {
-          folder,
-        });
-        return {
-          FM600: Math.floor(Math.random() * 900000) + 100000,
-          index: index + 1,
-          IMG: uploaded.secure_url,
-          RATIO: uploaded.height > 0 ? uploaded.height / uploaded.width : 1,
-          THUMB: uploaded.secure_url.replace('/upload/', '/upload/w_720/'),
-          DES: "",
-        };
-      })
-    );
+//     const result = await Promise.all(
+//       files.map(async (file, index) => {
+//         const base64 = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+//         const uploaded = await cloudinary.uploader.upload(base64, {
+//           folder,
+//         });
+//         return {
+//           FM600: Math.floor(Math.random() * 900000) + 100000,
+//           index: index + 1,
+//           IMG: uploaded.secure_url,
+//           RATIO: uploaded.height > 0 ? uploaded.height / uploaded.width : 1,
+//           THUMB: uploaded.secure_url.replace('/upload/', '/upload/w_720/'),
+//           DES: "",
+//         };
+//       })
+//     );
 
-    res.status(200).json({ status: 'success', elements: result });
-  } catch (error) {
-    res.status(500).json({ status: 'error', message: 'Upload image failed', error });
-  }
-}
+//     res.status(200).json({ status: 'success', elements: result });
+//   } catch (error) {
+//     res.status(500).json({ status: 'error', message: 'Upload image failed', error });
+//   }
+// }
 
 export const updatePost = async (req: Request, res: Response) => {
   try {

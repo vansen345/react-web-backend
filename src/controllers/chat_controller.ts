@@ -132,10 +132,10 @@ export const getListUserMessagesNew = async (req: Request, res: Response) => {
                 return {
                     ...user.toObject(),
                     conversationId: conversation?.conversationId || null,
-                    lastMessage: lastMessage?.message || "",
-                    lastMessageType: lastMessage?.type || "text",
-                    lastMessageSenderId: lastMessage?.senderId || "",
-                    lastMessageSenderName: lastMessage?.senderName || "",
+                    lastMessage: lastMessage?.message || null,
+                    lastMessageType: lastMessage?.type || null,
+                    lastMessageSenderId: lastMessage?.senderId || null,
+                    lastMessageSenderName: lastMessage?.senderName || null,
                     lastMessageAt: lastMessage?.createdAt || null,
                     isUnread,
                 };
