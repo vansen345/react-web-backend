@@ -7,7 +7,7 @@ import { UserModel } from '../models/user_model';
 
 export const getProfile = async (req: Request, res: Response) => {
     console.log('getProfilegetProfile');
-    
+
     try {
         const FO100 = Number(req.body.FO100) || 0;
         const myFO100 = Number(req.body.myFO100) || 0;
@@ -97,7 +97,10 @@ export const updateProfile = async (req: Request, res: Response) => {
         );
 
         if (!user) return res.status(404).json({ status: 'error', message: 'User not found' });
-
+        await HomeModel.updateMany(
+            { FO100 },
+            { NV106, NV126 }
+        );
         res.json({
             status: 'success',
             elements: {
